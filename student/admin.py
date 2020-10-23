@@ -4,7 +4,7 @@ import datetime
 from django.contrib import admin
 from django.http import HttpResponse
 
-from .models import Student, Programme, Institution, ProgrammeChoice, Enrollment
+from .models import Programme, Institution, ProgrammeChoice, Enrollment
 
 def export_to_csv(modeladmin, request, queryset):
     opts = modeladmin.model._meta
@@ -43,13 +43,13 @@ class InstitutionAdmin(admin.ModelAdmin):
 
 
 
-@admin.register(Student)
-class StudentAdmin(admin.ModelAdmin):
+# @admin.register(Student)
+# class StudentAdmin(admin.ModelAdmin):
 
-    list_display = ['id','user','index','school','location','points']
-    list_filter = ['school', 'location']
-    # list_editable = ['index','location']
-    list_per_page = 10
+#     list_display = ['id','user','index','school','location','points']
+#     list_filter = ['school', 'location']
+#     # list_editable = ['index','location']
+#     list_per_page = 10
     
 @admin.register(Programme)
 class ProgrammeAdmin(admin.ModelAdmin):
@@ -70,16 +70,20 @@ class ProgrammeChoiceAdmin(admin.ModelAdmin):
 @admin.register(Enrollment)
 class EnrollmentAdmin(admin.ModelAdmin):
 
-    # list_display = ['id','programme','date_enrolled']
+    list_display = ['id','student','programme','institution','date_enrolled']
     # list_filter = ['programme',]
 
-    # list_editable = ['category',]
     list_per_page = 10
     fields = ('programme', 'institution')
+
     def save_model(self, request, obj, form, change):
         if not change:
-            obj.Student = request.user
+            obj.student = request.user
         obj.save()
 
-        
+    def queryset(self, request):
+        if request.user.is_superuser:
+            return Enrollment.objects.all()
+        return Enrollment.objects.filter(student=request.user)
+
 admin.site.site_header = "KUCCPS" 

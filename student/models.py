@@ -4,18 +4,18 @@ from django.contrib.auth.models import User
 from django.db import models
 
 
-class Student(models.Model):
+# class Student(models.Model):
     
-    user     = models.OneToOneField(settings.AUTH_USER_MODEL,
-                on_delete=models.CASCADE)
-    photo = models.ImageField(upload_to='users/%Y/%m/%d/', blank=True)
-    index    = models.IntegerField()
-    school   = models.CharField(max_length=50)
-    location = models.CharField(max_length=50)
-    points   = models.DecimalField(max_digits=10, decimal_places=2)
+#     user     = models.OneToOneField(settings.AUTH_USER_MODEL,
+#                 on_delete=models.CASCADE)
+#     photo = models.ImageField(upload_to='users/%Y/%m/%d/', blank=True)
+#     index    = models.IntegerField()
+#     school   = models.CharField(max_length=50)
+#     location = models.CharField(max_length=50)
+#     points   = models.DecimalField(max_digits=10, decimal_places=2)
 
-    def __str__(self):
-        return self.user.username
+#     def __str__(self):
+#         return self.user.username
 
 
 class Institution(models.Model):
@@ -50,7 +50,7 @@ class Programme(models.Model):
         )
     name     = models.CharField(max_length=200)
     category = models.CharField(max_length=30, choices=CATEGORY_CHOICES)
-    students = models.ManyToManyField(Student, through='Enrollment')
+    # students = models.ManyToManyField(Student, through='Enrollment')
     institution = models.ManyToManyField(Institution, through='ProgrammeChoice')
 
     def __str__(self):
@@ -65,13 +65,14 @@ class ProgrammeChoice(models.Model):
 
 class Enrollment(models.Model):
 
-    Student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True, blank=True)
+    # Student = models.ForeignKey(Student, on_delete=models.CASCADE, null=True, blank=True)
+    student = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     programme = models.ForeignKey(Programme, on_delete=models.CASCADE)
     institution = models.ForeignKey(Institution, on_delete=models.CASCADE)
     date_enrolled = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = [['Student', 'programme', 'institution']]
+        unique_together = [['student','programme', 'institution']]
     
 
 
